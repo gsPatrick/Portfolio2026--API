@@ -176,24 +176,38 @@ async function devices({ days = 30 } = {}) {
 }
 
 // Últimas sessões com duração, páginas e se converteram.
+// Se o visitante preencheu o formulário, puxa o NOME dele (pelo visitorId) e
+// mostra em vez do id anônimo — inclusive nas visitas anteriores do mesmo navegador.
 async function sessions({ limit = 30 } = {}) {
   const rows = await sequelize.query(
     `SELECT
-        session_id                         AS "sessionId",
-        MIN(visitor_id)                    AS "visitorId",
-        MIN(ts)                            AS "startedAt",
-        MAX(ts)                            AS "lastAt",
-        (MAX(ts) - MIN(ts))                AS "durationMs",
-        COUNT(*)                           AS "events",
-        COUNT(DISTINCT path)               AS "pages",
-        MAX(CASE WHEN type = 'session_start' THEN meta->>'device' END)   AS "device",
-        MAX(CASE WHEN type = 'session_start' THEN meta->>'referrer' END) AS "referrer",
-        MIN(CASE WHEN type = 'page_view' THEN path END)                  AS "entryPath",
-        BOOL_OR(type = 'form_submit')      AS "converted"
-     FROM events
-     GROUP BY session_id
-     ORDER BY MAX(ts) DESC
-     LIMIT :limit`,
+        s."sessionId", s."visitorId", s."startedAt", s."lastAt", s."durationMs",
+        s."events", s."pages", s."device", s."referrer", s."entryPath", s."converted",
+        l.nome AS "nome"
+     FROM (
+        SELECT
+           session_id                         AS "sessionId",
+           MIN(visitor_id)                    AS "visitorId",
+           MIN(ts)                            AS "startedAt",
+           MAX(ts)                            AS "lastAt",
+           (MAX(ts) - MIN(ts))                AS "durationMs",
+           COUNT(*)                           AS "events",
+           COUNT(DISTINCT path)               AS "pages",
+           MAX(CASE WHEN type = 'session_start' THEN meta->>'device' END)   AS "device",
+           MAX(CASE WHEN type = 'session_start' THEN meta->>'referrer' END) AS "referrer",
+           MIN(CASE WHEN type = 'page_view' THEN path END)                  AS "entryPath",
+           BOOL_OR(type = 'form_submit')      AS "converted"
+        FROM events
+        GROUP BY session_id
+        ORDER BY MAX(ts) DESC
+        LIMIT :limit
+     ) s
+     LEFT JOIN LATERAL (
+        SELECT nome FROM leads
+        WHERE visitor_id = s."visitorId" AND nome IS NOT NULL AND nome <> ''
+        ORDER BY created_at DESC
+        LIMIT 1
+     ) l ON true`,
     {
       replacements: { limit: Number(limit) || 30 },
       type: sequelize.QueryTypes.SELECT,
@@ -203,6 +217,7 @@ async function sessions({ limit = 30 } = {}) {
   return rows.map((r) => ({
     sessionId: r.sessionId,
     visitorId: r.visitorId,
+    nome: r.nome || null,
     startedAt: Number(r.startedAt),
     lastAt: Number(r.lastAt),
     durationMs: Number(r.durationMs) || 0,

@@ -119,6 +119,7 @@ async function montar({ days = 30 } = {}) {
 
   const listaSessoes = sessoes.map((s) => ({
     visitante: String(s.visitorId || "").slice(0, 8),
+    nome: s.nome || null, // preenchido se a pessoa deixou o nome no formulário
     inicio: s.startedAt,
     duracao: duracao(s.durationMs),
     duracaoMs: s.durationMs,

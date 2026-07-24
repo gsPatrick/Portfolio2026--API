@@ -176,6 +176,8 @@
     tbody td { padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--ink-body); }
     tbody tr:last-child td { border-bottom: 0; }
     .vid { font-family: var(--font-mono); color: var(--ink-muted); font-size: 12.5px; }
+    .vname { font-weight: 600; color: var(--ink); font-size: 13.5px; display: inline-flex; align-items: center; gap: 6px; }
+    .vname::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); flex: none; }
     .num { font-family: var(--font-mono); }
     .badge {
       display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500;
@@ -426,9 +428,12 @@
         var badge = s.converteu
           ? '<span class="badge ok"><span class="b-dot"></span>Enviou o formulário</span>'
           : '<span class="badge no"><span class="b-dot"></span>Só visitou</span>';
+        var quem = s.nome
+          ? '<span class="vname">' + esc(s.nome) + "</span>"
+          : '<span class="vid">' + esc(s.visitante) + "…</span>";
         return (
           "<tr>" +
-            '<td><span class="vid">' + esc(s.visitante) + "…</span></td>" +
+            "<td>" + quem + "</td>" +
             "<td>" + esc(tempoRelativo(s.inicio)) + '<span class="hide-sm"> · ' + esc(horaLocal(s.inicio)) + "</span></td>" +
             "<td>" + esc(s.dispositivo || "—") + "</td>" +
             '<td class="num">' + esc(s.duracao) + "</td>" +
