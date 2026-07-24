@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clientes · Patrick.Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --white: #ffffff; --black: #0a0a0a; --gray: #525252;
+      --ink: #ffffff; --ink-body: #d4d4d4; --ink-muted: #8a8a8a; --ink-faint: #525252;
+      --line: rgba(255,255,255,0.08); --line-strong: rgba(255,255,255,0.14); --line-focus: rgba(255,255,255,0.4);
+      --panel: #101010; --panel-2: #141414; --ok: #7ee0a8;
+      --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+      --font-serif: "Instrument Serif", Georgia, serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: var(--font-sans); background: var(--black); color: var(--ink-body);
+      min-height: 100vh; line-height: 1.5;
+      background-image:
+        radial-gradient(60rem 40rem at 15% -10%, rgba(255,255,255,0.05), transparent 60%),
+        radial-gradient(50rem 30rem at 100% 0%, rgba(255,255,255,0.035), transparent 55%);
+      background-attachment: fixed;
+    }
+    .wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    .top { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 4px rgba(126,224,168,.14); }
+    .brand h1 { font-size: 15px; font-weight: 600; color: var(--ink); letter-spacing: -.01em; }
+    .brand h1 span { color: var(--ink-muted); font-weight: 400; }
+    .ghost-btn {
+      font-size: 13px; font-weight: 500; color: var(--ink-body); background: var(--panel);
+      border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px; text-decoration: none; transition: border-color .15s, color .15s;
+    }
+    .ghost-btn:hover { border-color: var(--line-strong); color: var(--ink); }
+    .ghost-btn svg { width: 14px; height: 14px; }
+
+    .lede { font-family: var(--font-serif); font-size: clamp(24px,3.4vw,34px); line-height: 1.2; color: var(--ink); margin: 22px 0 4px; letter-spacing: -.01em; }
+    .updated { font-size: 12.5px; color: var(--ink-faint); margin-bottom: 32px; }
+
+    .lista { display: flex; flex-direction: column; gap: 14px; }
+    .msg {
+      background: linear-gradient(180deg, var(--panel-2), var(--panel));
+      border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px;
+    }
+    .msg-top { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 4px; }
+    .msg-nome { font-size: 16px; font-weight: 600; color: var(--ink); }
+    .msg-quando { font-size: 12px; color: var(--ink-faint); font-family: var(--font-mono); white-space: nowrap; }
+    .tag {
+      display: inline-flex; align-items: center; font-size: 11.5px; font-weight: 500; color: var(--ink-body);
+      padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line-strong); margin: 6px 0 12px;
+    }
+    .msg-corpo { font-size: 14px; color: var(--ink-body); line-height: 1.6; white-space: pre-wrap; word-break: break-word; margin-bottom: 16px; }
+    .msg-corpo.vazio { color: var(--ink-faint); font-style: italic; }
+    .msg-meta { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12.5px; color: var(--ink-muted); margin-bottom: 16px; }
+    .msg-meta a { color: var(--ink-body); text-decoration: none; border-bottom: 1px solid var(--line-strong); }
+    .msg-meta a:hover { color: var(--ink); }
+    .msg-meta .k { color: var(--ink-faint); }
+    .acoes { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      font-size: 13px; font-weight: 500; padding: 9px 15px; border-radius: 10px; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line-strong); color: var(--ink-body);
+      transition: border-color .15s, color .15s, background .15s;
+    }
+    .btn:hover { border-color: var(--line-focus); color: var(--ink); }
+    .btn.wa { color: var(--ok); border-color: rgba(126,224,168,.3); background: rgba(126,224,168,.07); }
+    .btn.wa:hover { background: rgba(126,224,168,.14); }
+    .btn svg { width: 15px; height: 15px; }
+
+    .empty { text-align: center; padding: 70px 20px; color: var(--ink-faint); }
+    .empty .big { font-family: var(--font-serif); font-size: 24px; color: var(--ink-muted); margin-bottom: 10px; }
+
+    footer { margin-top: 40px; font-size: 12px; color: var(--ink-faint); text-align: center; }
+    footer code { font-family: var(--font-mono); color: var(--ink-muted); }
+    .loading { opacity: .4; }
+
+    @media (max-width: 520px) { .wrap { padding: 28px 16px 60px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap" id="app">
+    <div class="top">
+      <div class="brand"><span class="dot"></span><h1>Clientes <span>· Patrick.Developer</span></h1></div>
+      <a class="ghost-btn" href="/painel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        Voltar ao painel
+      </a>
+    </div>
+
+    <h2 class="lede" id="lede">Carregando as mensagens…</h2>
+    <p class="updated" id="updated">&nbsp;</p>
+
+    <div class="lista" id="lista"></div>
+
+    <footer>Atualiza sozinho a cada 30 segundos · Mensagens de <code>/api/v1/leads</code></footer>
+  </div>
+
+  <script>
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+      });
+    }
+    function tempoRelativo(ms) {
+      var diff = Date.now() - new Date(ms).getTime();
+      var min = Math.round(diff / 60000);
+      if (min < 1) return "agora mesmo";
+      if (min < 60) return "há " + min + " min";
+      var h = Math.round(min / 60);
+      if (h < 24) return "há " + h + " h";
+      var d = Math.round(h / 24);
+      return "há " + d + (d === 1 ? " dia" : " dias");
+    }
+    function dataLocal(ms) {
+      try { return new Date(ms).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }); }
+      catch (e) { return ""; }
+    }
+    // Monta o link do WhatsApp a partir do que a pessoa digitou.
+    function waLink(numero, nome) {
+      var d = String(numero || "").replace(/\D/g, "");
+      if (!d) return null;
+      if (d.length <= 11) d = "55" + d; // adiciona DDI Brasil se faltar
+      var texto = "Olá " + (nome || "") + "! Aqui é o Patrick, recebi sua mensagem pelo site.";
+      return "https://wa.me/" + d + "?text=" + encodeURIComponent(texto);
+    }
+
+    var ICON_WA = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 1 1-4.2 14.8l-.3-.2-2.8.8.8-2.7-.2-.3A8 8 0 0 1 12 4zm4.6 10.3c-.2-.1-1.4-.7-1.6-.8s-.4-.1-.5.1-.6.8-.7.9-.3.2-.5.1a6.5 6.5 0 0 1-1.9-1.2 7.2 7.2 0 0 1-1.3-1.7c-.1-.2 0-.4.1-.5l.4-.4.2-.4v-.4c0-.1-.5-1.3-.7-1.7s-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 5 5 0 0 0 1 2.6 11 11 0 0 0 4.3 3.8c1.6.6 1.6.4 1.9.4a2.5 2.5 0 0 0 1.7-1.2 2 2 0 0 0 .1-1.2z"/></svg>';
+    var ICON_MAIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 6l8 6 8-6"/></svg>';
+
+    function desenhar(lista) {
+      var el = document.getElementById("lista");
+      if (!lista || lista.length === 0) {
+        el.innerHTML = '<div class="empty"><div class="big">Nenhuma mensagem ainda</div>Quando alguém enviar o formulário do site, a mensagem completa aparece aqui.</div>';
+        return;
+      }
+      el.innerHTML = lista.map(function (m) {
+        var acoes = [];
+        var wa = waLink(m.whatsapp, m.nome);
+        if (wa) acoes.push('<a class="btn wa" href="' + wa + '" target="_blank" rel="noopener">' + ICON_WA + "Responder no WhatsApp</a>");
+        if (m.email) acoes.push('<a class="btn" href="mailto:' + esc(m.email) + '?subject=' + encodeURIComponent("Sobre sua mensagem — Patrick.Developer") + '">' + ICON_MAIL + "Responder por e-mail</a>");
+
+        var meta = [];
+        if (m.email) meta.push('<span><span class="k">e-mail:</span> <a href="mailto:' + esc(m.email) + '">' + esc(m.email) + "</a></span>");
+        if (m.whatsapp) meta.push('<span><span class="k">whatsapp:</span> ' + esc(m.whatsapp) + "</span>");
+
+        return (
+          '<article class="msg">' +
+            '<div class="msg-top">' +
+              '<span class="msg-nome">' + esc(m.nome || "Sem nome") + "</span>" +
+              '<span class="msg-quando">' + esc(tempoRelativo(m.criadoEm)) + " · " + esc(dataLocal(m.criadoEm)) + "</span>" +
+            "</div>" +
+            (m.tipo ? '<span class="tag">' + esc(m.tipo) + "</span>" : "") +
+            '<div class="msg-corpo' + (m.mensagem ? "" : " vazio") + '">' + (m.mensagem ? esc(m.mensagem) : "Sem descrição do projeto.") + "</div>" +
+            (meta.length ? '<div class="msg-meta">' + meta.join("") + "</div>" : "") +
+            (acoes.length ? '<div class="acoes">' + acoes.join("") + "</div>" : "") +
+          "</article>"
+        );
+      }).join("");
+    }
+
+    function carregar() {
+      document.getElementById("app").classList.add("loading");
+      fetch("/api/v1/leads?limit=200", { headers: { Accept: "application/json" } })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          document.getElementById("lede").textContent = res.mensagem || "";
+          document.getElementById("updated").textContent = "Atualizado " + tempoRelativo(Date.now());
+          desenhar(res.data || []);
+        })
+        .catch(function () {
+          document.getElementById("lede").textContent = "Não consegui carregar as mensagens agora. Confira se a API está no ar.";
+        })
+        .finally(function () { document.getElementById("app").classList.remove("loading"); });
+    }
+
+    carregar();
+    setInterval(carregar, 30000);
+  </script>
+</body>
+</html>

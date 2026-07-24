@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Painel · Patrick.Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --white: #ffffff;
+      --black: #0a0a0a;
+      --gray: #525252;
+      --ink: #ffffff;
+      --ink-body: #d4d4d4;
+      --ink-muted: #8a8a8a;
+      --ink-faint: #525252;
+      --line: rgba(255, 255, 255, 0.08);
+      --line-strong: rgba(255, 255, 255, 0.14);
+      --line-focus: rgba(255, 255, 255, 0.4);
+      --panel: #101010;
+      --panel-2: #141414;
+      --ok: #7ee0a8;
+      --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+      --font-serif: "Instrument Serif", Georgia, serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--black);
+      color: var(--ink-body);
+      min-height: 100vh;
+      line-height: 1.5;
+      background-image:
+        radial-gradient(60rem 40rem at 15% -10%, rgba(255, 255, 255, 0.05), transparent 60%),
+        radial-gradient(50rem 30rem at 100% 0%, rgba(255, 255, 255, 0.035), transparent 55%);
+      background-attachment: fixed;
+    }
+
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* Cabeçalho */
+    .top {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 24px; flex-wrap: wrap; margin-bottom: 8px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand .dot {
+      width: 9px; height: 9px; border-radius: 50%; background: var(--ok);
+      box-shadow: 0 0 0 4px rgba(126, 224, 168, 0.14); flex: none;
+    }
+    .brand h1 {
+      font-family: var(--font-sans); font-weight: 600; font-size: 15px;
+      letter-spacing: -0.01em; color: var(--ink);
+    }
+    .brand h1 span { color: var(--ink-muted); font-weight: 400; }
+
+    .controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .segmented {
+      display: inline-flex; background: var(--panel); border: 1px solid var(--line);
+      border-radius: 10px; padding: 3px;
+    }
+    .segmented button {
+      font-family: var(--font-sans); font-size: 13px; font-weight: 500;
+      color: var(--ink-muted); background: transparent; border: 0; cursor: pointer;
+      padding: 6px 14px; border-radius: 7px; transition: color .15s, background .15s;
+    }
+    .segmented button:hover { color: var(--ink-body); }
+    .segmented button.is-active { background: var(--white); color: var(--black); }
+
+    .ghost-btn {
+      font-family: var(--font-sans); font-size: 13px; font-weight: 500; color: var(--ink-body);
+      background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+      padding: 8px 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+      transition: border-color .15s, color .15s;
+    }
+    .ghost-btn:hover { border-color: var(--line-strong); color: var(--ink); }
+    .ghost-btn svg { width: 14px; height: 14px; }
+
+    /* Frase de topo */
+    .lede {
+      font-family: var(--font-serif); font-size: clamp(24px, 3.4vw, 36px);
+      line-height: 1.2; color: var(--ink); letter-spacing: -0.01em;
+      margin: 22px 0 6px; max-width: 34ch; text-wrap: balance;
+    }
+    .updated { font-size: 12.5px; color: var(--ink-faint); margin-bottom: 24px; }
+    .updated b { color: var(--ink-muted); font-weight: 500; }
+
+    .engaj { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 26px; }
+    .engaj span {
+      font-size: 12.5px; color: var(--ink-body); background: var(--panel);
+      border: 1px solid var(--line); border-radius: 999px; padding: 6px 13px;
+    }
+    .engaj span b { font-family: var(--font-mono); color: var(--ink); font-weight: 600; }
+
+    /* Grid de KPIs */
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 14px; }
+    .card {
+      background: linear-gradient(180deg, var(--panel-2), var(--panel));
+      border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+    }
+    .kpi .label {
+      font-size: 12.5px; color: var(--ink-muted); font-weight: 500;
+      display: flex; align-items: center; gap: 6px; margin-bottom: 14px;
+    }
+    .kpi .value {
+      font-family: var(--font-mono); font-weight: 600; font-size: 34px;
+      color: var(--ink); letter-spacing: -0.02em; line-height: 1;
+    }
+    .kpi .help { font-size: 12px; color: var(--ink-faint); margin-top: 10px; line-height: 1.45; }
+
+    /* Blocos de gráfico */
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .block-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+    .block-sub { font-size: 12.5px; color: var(--ink-faint); margin-bottom: 20px; }
+
+    .bars { display: flex; flex-direction: column; gap: 14px; }
+    .bar-row { display: grid; grid-template-columns: 1fr; gap: 7px; }
+    .bar-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+    .bar-name {
+      font-size: 13px; color: var(--ink-body); font-weight: 500;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .bar-val { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-muted); flex: none; }
+    .track { height: 8px; background: rgba(255, 255, 255, 0.05); border-radius: 6px; overflow: hidden; }
+    .fill {
+      height: 100%; width: 0; border-radius: 6px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.55), var(--white));
+      transition: width .8s cubic-bezier(.2,.7,.2,1);
+    }
+    .bar-sub { font-size: 11.5px; color: var(--ink-faint); margin-top: 1px; }
+
+    /* Gráfico de colunas (por dia) */
+    .cols { display: flex; align-items: flex-end; gap: 3px; height: 168px; padding-top: 8px; }
+    .col {
+      flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end;
+      align-items: center; gap: 6px; height: 100%; position: relative;
+    }
+    .col .stack {
+      width: 100%; max-width: 26px; display: flex; flex-direction: column; justify-content: flex-end;
+      height: 100%;
+    }
+    .col .seg {
+      width: 100%; border-radius: 4px 4px 0 0; height: 0;
+      transition: height .7s cubic-bezier(.2,.7,.2,1);
+    }
+    .col .seg.base { background: rgba(255,255,255,0.16); }
+    .col .seg.conv { background: var(--ok); border-radius: 4px 4px 0 0; }
+    .col:hover .seg.base { background: rgba(255,255,255,0.3); }
+    .col .cap { font-size: 10px; color: var(--ink-faint); white-space: nowrap; }
+    .col .tip {
+      position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+      background: #1c1c1c; border: 1px solid var(--line-strong); border-radius: 8px; padding: 7px 10px;
+      font-size: 11.5px; color: var(--ink-body); white-space: nowrap; opacity: 0; pointer-events: none;
+      transition: opacity .12s; z-index: 5; box-shadow: 0 8px 24px rgba(0,0,0,.5);
+    }
+    .col:hover .tip { opacity: 1; }
+    .col .tip b { color: var(--ink); font-family: var(--font-mono); }
+
+    /* Tabela de sessões */
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--ink-faint); padding: 0 0 12px; border-bottom: 1px solid var(--line);
+    }
+    thead th.num, tbody td.num { text-align: right; }
+    tbody td { padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--ink-body); }
+    tbody tr:last-child td { border-bottom: 0; }
+    .vid { font-family: var(--font-mono); color: var(--ink-muted); font-size: 12.5px; }
+    .num { font-family: var(--font-mono); }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500;
+      padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line-strong);
+    }
+    .badge.ok { color: var(--ok); border-color: rgba(126, 224, 168, 0.3); background: rgba(126, 224, 168, 0.08); }
+    .badge.no { color: var(--ink-muted); }
+    .badge .b-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+    /* Estado vazio */
+    .empty { text-align: center; padding: 40px 20px; color: var(--ink-faint); font-size: 13.5px; }
+    .empty .big { font-family: var(--font-serif); font-size: 20px; color: var(--ink-muted); margin-bottom: 8px; }
+
+    footer { margin-top: 40px; font-size: 12px; color: var(--ink-faint); text-align: center; }
+    footer code { font-family: var(--font-mono); color: var(--ink-muted); }
+
+    .loading { opacity: .4; transition: opacity .2s; }
+
+    @media (max-width: 860px) {
+      .kpis { grid-template-columns: repeat(2, 1fr); }
+      .row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      .wrap { padding: 28px 16px 60px; }
+      .kpis { grid-template-columns: 1fr; }
+      .hide-sm { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" id="app">
+    <div class="top">
+      <div class="brand">
+        <span class="dot"></span>
+        <h1>Painel <span>· Patrick.Developer</span></h1>
+      </div>
+      <div class="controls">
+        <div class="segmented" id="periodo">
+          <button data-days="7">7 dias</button>
+          <button data-days="30" class="is-active">30 dias</button>
+          <button data-days="90">90 dias</button>
+        </div>
+        <a class="ghost-btn" href="/clientes" title="Ver as mensagens do formulário">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H5.2L4 17.5z"/></svg>
+          Clientes
+        </a>
+        <button class="ghost-btn" id="exportar" title="Baixar todos os dados para análise">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+          Exportar
+        </button>
+        <button class="ghost-btn" id="refresh" title="Atualizar agora">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
+          Atualizar
+        </button>
+      </div>
+    </div>
+
+    <h2 class="lede" id="lede">Carregando os números…</h2>
+    <p class="updated" id="updated">&nbsp;</p>
+
+    <div class="kpis" id="kpis"></div>
+
+    <p class="engaj" id="engaj">&nbsp;</p>
+
+    <section class="card" style="margin-bottom:14px">
+      <div class="block-title">Atividade por dia</div>
+      <div class="block-sub">Visitas em cada dia do período. As barras verdes marcam quem enviou o formulário.</div>
+      <div id="diario"></div>
+    </section>
+
+    <div class="row">
+      <section class="card">
+        <div class="block-title">Onde as pessoas passam mais tempo</div>
+        <div class="block-sub">Tempo médio de leitura em cada seção da página.</div>
+        <div id="secoes"></div>
+      </section>
+      <section class="card">
+        <div class="block-title">No que mais clicaram</div>
+        <div class="block-sub">Botão, em qual seção da página, e quando foi o último clique.</div>
+        <div id="cliques"></div>
+      </section>
+    </div>
+
+    <div class="row">
+      <section class="card">
+        <div class="block-title">Origem do tráfego</div>
+        <div class="block-sub">De onde vêm as visitas e quanto cada origem converte. Chave para tráfego pago.</div>
+        <div id="origens"></div>
+      </section>
+      <section class="card">
+        <div class="block-title">Dispositivos</div>
+        <div class="block-sub">Celular, computador ou tablet — com a conversão de cada um.</div>
+        <div id="dispositivos"></div>
+      </section>
+    </div>
+
+    <section class="card">
+      <div class="block-title">Últimas visitas</div>
+      <div class="block-sub">As visitas mais recentes, da mais nova para a mais antiga.</div>
+      <div id="sessoes"></div>
+    </section>
+
+    <footer>
+      Atualiza sozinho a cada 30 segundos · Dados de <code>/api/v1/painel</code>
+    </footer>
+  </div>
+
+  <script>
+    var estado = { days: 30, timer: null };
+
+    // ---- helpers de texto ----
+    function tempoRelativo(ms) {
+      var diff = Date.now() - Number(ms);
+      var seg = Math.round(diff / 1000);
+      if (seg < 60) return "agora mesmo";
+      var min = Math.round(seg / 60);
+      if (min < 60) return "há " + min + " min";
+      var h = Math.round(min / 60);
+      if (h < 24) return "há " + h + " h";
+      var d = Math.round(h / 24);
+      return "há " + d + " " + (d === 1 ? "dia" : "dias");
+    }
+
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+      });
+    }
+
+    function horaLocal(ms) {
+      try {
+        return new Date(Number(ms)).toLocaleString("pt-BR", {
+          day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit",
+        });
+      } catch (e) { return ""; }
+    }
+
+    // ---- desenho ----
+    function desenharKpis(kpis) {
+      document.getElementById("kpis").innerHTML = kpis.map(function (k) {
+        return (
+          '<div class="card kpi">' +
+            '<div class="label">' + esc(k.rotulo) + "</div>" +
+            '<div class="value">' + esc(k.valor) + "</div>" +
+            '<div class="help">' + esc(k.ajuda) + "</div>" +
+          "</div>"
+        );
+      }).join("");
+    }
+
+    function desenharBarras(alvo, itens, getNome, getValor, getTexto, getSub) {
+      var el = document.getElementById(alvo);
+      if (!itens || itens.length === 0) {
+        el.innerHTML = '<div class="empty"><div class="big">Ainda sem dados</div>Isso aparece conforme as pessoas usam sua página.</div>';
+        return;
+      }
+      var max = Math.max.apply(null, itens.map(getValor)) || 1;
+      el.innerHTML = '<div class="bars">' + itens.map(function (it) {
+        var pct = Math.max(4, Math.round((getValor(it) / max) * 100));
+        var sub = getSub ? getSub(it) : "";
+        return (
+          '<div class="bar-row">' +
+            '<div class="bar-head">' +
+              '<span class="bar-name">' + esc(getNome(it)) + "</span>" +
+              '<span class="bar-val">' + esc(getTexto(it)) + "</span>" +
+            "</div>" +
+            '<div class="track"><div class="fill" data-pct="' + pct + '"></div></div>' +
+            (sub ? '<div class="bar-sub">' + esc(sub) + "</div>" : "") +
+          "</div>"
+        );
+      }).join("") + "</div>";
+      // anima as larguras no próximo frame
+      requestAnimationFrame(function () {
+        var fills = el.querySelectorAll(".fill");
+        for (var i = 0; i < fills.length; i++) fills[i].style.width = fills[i].getAttribute("data-pct") + "%";
+      });
+    }
+
+    function desenharEngajamento(e) {
+      var el = document.getElementById("engaj");
+      if (!e) { el.innerHTML = "&nbsp;"; return; }
+      el.innerHTML =
+        '<span>Rolagem média da página: <b>' + (e.rolagemMediaPct || 0) + '%</b></span>' +
+        '<span>Tempo médio por visita: <b>' + esc(e.duracaoMedia || "0 s") + "</b></span>";
+    }
+
+    function desenharDiario(itens) {
+      var el = document.getElementById("diario");
+      if (!itens || itens.length === 0) {
+        el.innerHTML = '<div class="empty"><div class="big">Ainda sem atividade</div>Cada dia com visitas vira uma coluna aqui.</div>';
+        return;
+      }
+      var max = Math.max.apply(null, itens.map(function (d) { return d.visitas; })) || 1;
+      var step = Math.max(1, Math.ceil(itens.length / 12));
+      el.innerHTML = '<div class="cols">' + itens.map(function (d, idx) {
+        var convH = Math.round((d.envios / max) * 100);
+        var baseH = Math.max(0, Math.round((d.visitas / max) * 100) - convH);
+        var mostraRotulo = idx % step === 0 || idx === itens.length - 1;
+        var tip = d.rotulo + " · " + d.visitas + (d.visitas === 1 ? " visita" : " visitas") +
+          (d.envios ? " · " + d.envios + (d.envios === 1 ? " envio" : " envios") : "");
+        return (
+          '<div class="col">' +
+            '<div class="tip"><b>' + esc(d.rotulo) + "</b> · " + d.visitas + (d.visitas === 1 ? " visita" : " visitas") +
+              (d.envios ? " · " + d.envios + (d.envios === 1 ? " envio" : " envios") : "") + "</div>" +
+            '<div class="stack">' +
+              '<div class="seg conv" data-h="' + convH + '"></div>' +
+              '<div class="seg base" data-h="' + baseH + '"></div>' +
+            "</div>" +
+            '<div class="cap">' + (mostraRotulo ? esc(d.rotulo) : "&nbsp;") + "</div>" +
+          "</div>"
+        );
+      }).join("") + "</div>";
+      requestAnimationFrame(function () {
+        var segs = el.querySelectorAll(".seg");
+        for (var i = 0; i < segs.length; i++) segs[i].style.height = segs[i].getAttribute("data-h") + "%";
+      });
+    }
+
+    function desenharSessoes(sessoes) {
+      var el = document.getElementById("sessoes");
+      if (!sessoes || sessoes.length === 0) {
+        el.innerHTML = '<div class="empty"><div class="big">Nenhuma visita ainda</div>Quando alguém acessar sua página, aparece aqui — com duração e se enviou o formulário.</div>';
+        return;
+      }
+      var linhas = sessoes.map(function (s) {
+        var badge = s.converteu
+          ? '<span class="badge ok"><span class="b-dot"></span>Enviou o formulário</span>'
+          : '<span class="badge no"><span class="b-dot"></span>Só visitou</span>';
+        return (
+          "<tr>" +
+            '<td><span class="vid">' + esc(s.visitante) + "…</span></td>" +
+            '<td class="hide-sm">' + esc(tempoRelativo(s.inicio)) + " · " + esc(horaLocal(s.inicio)) + "</td>" +
+            '<td class="num">' + esc(s.duracao) + "</td>" +
+            '<td class="num hide-sm">' + esc(s.paginas) + "</td>" +
+            "<td>" + badge + "</td>" +
+          "</tr>"
+        );
+      }).join("");
+      el.innerHTML =
+        "<table><thead><tr>" +
+          "<th>Visitante</th>" +
+          '<th class="hide-sm">Quando</th>' +
+          '<th class="num">Duração</th>' +
+          '<th class="num hide-sm">Páginas</th>' +
+          "<th>Resultado</th>" +
+        "</tr></thead><tbody>" + linhas + "</tbody></table>";
+    }
+
+    // ---- carregar ----
+    function carregar() {
+      document.getElementById("app").classList.add("loading");
+      fetch("/api/v1/painel?days=" + estado.days, { headers: { Accept: "application/json" } })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          var d = res.data || {};
+          document.getElementById("lede").textContent = res.mensagem || d.mensagemTopo || "";
+          document.getElementById("updated").innerHTML =
+            "Atualizado <b>" + tempoRelativo(Date.now()) + "</b> · período de " + esc(d.periodoDias) + " dias";
+          desenharKpis(d.kpis || []);
+          desenharEngajamento(d.engajamento);
+          desenharDiario(d.graficoDiario);
+          desenharBarras("secoes", d.graficoSecoes,
+            function (i) { return i.rotulo; },
+            function (i) { return i.tempoMedioMs; },
+            function (i) { return i.tempoMedio; },
+            function (i) { return i.visitas + (i.visitas === 1 ? " visita" : " visitas") + " · " + i.tempoTotal + " no total"; });
+          desenharBarras("cliques", d.graficoCliques,
+            function (i) { return i.rotulo; },
+            function (i) { return i.cliques; },
+            function (i) { return i.cliques + (i.cliques === 1 ? " clique" : " cliques"); },
+            function (i) { return "na seção " + i.secao + (i.quando ? " · último " + i.quando : ""); });
+          desenharBarras("origens", d.graficoOrigens,
+            function (i) { return i.fonte; },
+            function (i) { return i.sessoes; },
+            function (i) { return i.sessoes + (i.sessoes === 1 ? " visita" : " visitas"); },
+            function (i) { return i.conversoes + (i.conversoes === 1 ? " conversão" : " conversões") + " · " + i.taxa; });
+          desenharBarras("dispositivos", d.graficoDispositivos,
+            function (i) { return i.dispositivo; },
+            function (i) { return i.sessoes; },
+            function (i) { return i.sessoes + (i.sessoes === 1 ? " visita" : " visitas"); },
+            function (i) { return i.conversoes + (i.conversoes === 1 ? " conversão" : " conversões") + " · " + i.taxa; });
+          desenharSessoes(d.sessoes);
+        })
+        .catch(function () {
+          document.getElementById("lede").textContent = "Não consegui carregar os dados agora. Confira se a API está no ar e tente atualizar.";
+        })
+        .finally(function () {
+          document.getElementById("app").classList.remove("loading");
+        });
+    }
+
+    // ---- eventos ----
+    document.getElementById("periodo").addEventListener("click", function (e) {
+      var btn = e.target.closest("button");
+      if (!btn) return;
+      var botoes = this.querySelectorAll("button");
+      for (var i = 0; i < botoes.length; i++) botoes[i].classList.remove("is-active");
+      btn.classList.add("is-active");
+      estado.days = Number(btn.getAttribute("data-days"));
+      carregar();
+    });
+    document.getElementById("refresh").addEventListener("click", carregar);
+
+    // Baixa o dump completo (últimos 90 dias) para você me enviar depois.
+    document.getElementById("exportar").addEventListener("click", function () {
+      var btn = this;
+      btn.disabled = true;
+      var textoOriginal = btn.innerHTML;
+      btn.textContent = "Preparando…";
+      fetch("/api/v1/analytics/export?days=90", { headers: { Accept: "application/json" } })
+        .then(function (r) { return r.json(); })
+        .then(function (res) {
+          var blob = new Blob([JSON.stringify(res.data, null, 2)], { type: "application/json" });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement("a");
+          var hoje = new Date().toISOString().slice(0, 10);
+          a.href = url;
+          a.download = "portfolio-dados-" + hoje + ".json";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        })
+        .catch(function () { alert("Não consegui exportar agora. Tente de novo."); })
+        .finally(function () { btn.disabled = false; btn.innerHTML = textoOriginal; });
+    });
+
+    carregar();
+    estado.timer = setInterval(carregar, 30000);
+  </script>
+</body>
+</html>
