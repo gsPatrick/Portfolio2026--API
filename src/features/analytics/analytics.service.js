@@ -316,6 +316,58 @@ async function exportar({ days = 90 } = {}) {
   };
 }
 
+// Visitas vindas de IA: classifica o referrer em ChatGPT / Perplexity / Gemini /
+// Copilot / Claude etc. É como você vê quando uma IA te indicou.
+async function aiVisits({ days = 30 } = {}) {
+  const since = sinceTs(days);
+
+  const rows = await sequelize.query(
+    `WITH base AS (
+        SELECT session_id,
+               lower(regexp_replace(COALESCE(meta->>'referrer',''), '^https?://(www\\.)?([^/]+).*$', '\\2')) AS host
+        FROM events
+        WHERE type = 'session_start' AND ts >= :since
+     ),
+     mapeado AS (
+        SELECT session_id,
+               CASE
+                 WHEN host LIKE '%chatgpt.com%' OR host LIKE '%chat.openai.com%' OR host = 'openai.com' THEN 'ChatGPT'
+                 WHEN host LIKE '%perplexity.ai%' THEN 'Perplexity'
+                 WHEN host LIKE '%gemini.google.com%' OR host LIKE '%bard.google.com%' THEN 'Gemini'
+                 WHEN host LIKE '%copilot.microsoft.com%' OR host LIKE '%copilot.cloud.microsoft%' THEN 'Copilot'
+                 WHEN host LIKE '%claude.ai%' THEN 'Claude'
+                 WHEN host LIKE '%you.com%' THEN 'You.com'
+                 WHEN host LIKE '%poe.com%' THEN 'Poe'
+                 ELSE NULL
+               END AS engine
+        FROM base
+     ),
+     conv AS (
+        SELECT DISTINCT session_id FROM events WHERE type = 'form_submit' AND ts >= :since
+     )
+     SELECT m.engine,
+            COUNT(*)             AS sessoes,
+            COUNT(c.session_id)  AS conversoes
+     FROM mapeado m
+     LEFT JOIN conv c ON c.session_id = m.session_id
+     WHERE m.engine IS NOT NULL
+     GROUP BY m.engine
+     ORDER BY sessoes DESC`,
+    { replacements: { since }, type: sequelize.QueryTypes.SELECT }
+  );
+
+  return rows.map((r) => {
+    const sessoes = Number(r.sessoes) || 0;
+    const conversoes = Number(r.conversoes) || 0;
+    return {
+      engine: r.engine,
+      sessoes,
+      conversoes,
+      taxaConversao: sessoes ? Number((conversoes / sessoes).toFixed(4)) : 0,
+    };
+  });
+}
+
 module.exports = {
   summary,
   sections,
@@ -325,5 +377,6 @@ module.exports = {
   sources,
   devices,
   engagement,
+  aiVisits,
   exportar,
 };

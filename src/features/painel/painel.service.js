@@ -6,7 +6,7 @@ const { numero, duracao, porcentagem, palavra } = require("../../utils/formato")
 async function montar({ days = 30 } = {}) {
   const dias = Number(days) || 30;
 
-  const [resumo, secoes, cliques, sessoes, porDia, origens, dispositivos, engaj] =
+  const [resumo, secoes, cliques, sessoes, porDia, origens, dispositivos, engaj, ia] =
     await Promise.all([
       analytics.summary({ days: dias }),
       analytics.sections({ days: dias }),
@@ -16,6 +16,7 @@ async function montar({ days = 30 } = {}) {
       analytics.sources({ days: dias }),
       analytics.devices({ days: dias }),
       analytics.engagement({ days: dias }),
+      analytics.aiVisits({ days: dias }),
     ]);
 
   // "há 2 h", "há 3 dias" a partir de um epoch ms.
@@ -103,6 +104,19 @@ async function montar({ days = 30 } = {}) {
     duracaoMedia: duracao(engaj.duracaoMediaMs),
   };
 
+  const totalIA = ia.reduce((soma, x) => soma + x.sessoes, 0);
+  const conversoesIA = ia.reduce((soma, x) => soma + x.conversoes, 0);
+  const visitasIA = {
+    total: totalIA,
+    conversoes: conversoesIA,
+    porMotor: ia.map((x) => ({
+      motor: x.engine,
+      sessoes: x.sessoes,
+      conversoes: x.conversoes,
+      taxa: porcentagem(x.taxaConversao),
+    })),
+  };
+
   const listaSessoes = sessoes.map((s) => ({
     visitante: String(s.visitorId || "").slice(0, 8),
     inicio: s.startedAt,
@@ -129,6 +143,7 @@ async function montar({ days = 30 } = {}) {
     graficoCliques,
     graficoOrigens,
     graficoDispositivos,
+    visitasIA,
     sessoes: listaSessoes,
     resumoBruto: resumo,
   };

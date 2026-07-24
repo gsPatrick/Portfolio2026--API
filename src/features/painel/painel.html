@@ -119,6 +119,7 @@
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
     .block-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
     .block-sub { font-size: 12.5px; color: var(--ink-faint); margin-bottom: 20px; }
+    .ia-badge { font-family: var(--font-mono); font-size: 12px; font-weight: 500; color: var(--ok); margin-left: 8px; }
 
     .bars { display: flex; flex-direction: column; gap: 14px; }
     .bar-row { display: grid; grid-template-columns: 1fr; gap: 7px; }
@@ -270,6 +271,12 @@
     </div>
 
     <section class="card">
+      <div class="block-title">Visitas vindas de IA <span id="iaTotal" class="ia-badge"></span></div>
+      <div class="block-sub">Quando alguém chega ao site depois que uma IA te indicou (ChatGPT, Perplexity, Gemini, Copilot, Claude…).</div>
+      <div id="visitasIA"></div>
+    </section>
+
+    <section class="card">
       <div class="block-title">Últimas visitas</div>
       <div class="block-sub">As visitas mais recentes, da mais nova para a mais antiga.</div>
       <div id="sessoes"></div>
@@ -349,6 +356,22 @@
         var fills = el.querySelectorAll(".fill");
         for (var i = 0; i < fills.length; i++) fills[i].style.width = fills[i].getAttribute("data-pct") + "%";
       });
+    }
+
+    function desenharIA(ia) {
+      var badge = document.getElementById("iaTotal");
+      var el = document.getElementById("visitasIA");
+      if (!ia || !ia.total) {
+        if (badge) badge.textContent = "";
+        el.innerHTML = '<div class="empty"><div class="big">Nenhuma visita de IA ainda</div>Assim que uma IA (ChatGPT, Perplexity, Gemini, Copilot, Claude…) te indicar e a pessoa clicar, aparece aqui — com qual motor foi e se converteu.</div>';
+        return;
+      }
+      if (badge) badge.textContent = ia.total + (ia.total === 1 ? " visita" : " visitas") + (ia.conversoes ? " · " + ia.conversoes + " conv." : "");
+      desenharBarras("visitasIA", ia.porMotor,
+        function (i) { return i.motor; },
+        function (i) { return i.sessoes; },
+        function (i) { return i.sessoes + (i.sessoes === 1 ? " visita" : " visitas"); },
+        function (i) { return i.conversoes + (i.conversoes === 1 ? " conversão" : " conversões") + " · " + i.taxa; });
     }
 
     function desenharEngajamento(e) {
@@ -454,6 +477,7 @@
             function (i) { return i.sessoes; },
             function (i) { return i.sessoes + (i.sessoes === 1 ? " visita" : " visitas"); },
             function (i) { return i.conversoes + (i.conversoes === 1 ? " conversão" : " conversões") + " · " + i.taxa; });
+          desenharIA(d.visitasIA);
           desenharSessoes(d.sessoes);
         })
         .catch(function () {
