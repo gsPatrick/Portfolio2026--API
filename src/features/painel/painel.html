@@ -165,7 +165,9 @@
     .col .tip b { color: var(--ink); font-family: var(--font-mono); }
 
     /* Tabela de sessões */
-    table { width: 100%; border-collapse: collapse; }
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; min-width: 460px; }
+    tbody td { white-space: nowrap; }
     thead th {
       text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase;
       letter-spacing: 0.06em; color: var(--ink-faint); padding: 0 0 12px; border-bottom: 1px solid var(--line);
@@ -427,7 +429,8 @@
         return (
           "<tr>" +
             '<td><span class="vid">' + esc(s.visitante) + "…</span></td>" +
-            '<td class="hide-sm">' + esc(tempoRelativo(s.inicio)) + " · " + esc(horaLocal(s.inicio)) + "</td>" +
+            "<td>" + esc(tempoRelativo(s.inicio)) + '<span class="hide-sm"> · ' + esc(horaLocal(s.inicio)) + "</span></td>" +
+            "<td>" + esc(s.dispositivo || "—") + "</td>" +
             '<td class="num">' + esc(s.duracao) + "</td>" +
             '<td class="num hide-sm">' + esc(s.paginas) + "</td>" +
             "<td>" + badge + "</td>" +
@@ -435,13 +438,14 @@
         );
       }).join("");
       el.innerHTML =
-        "<table><thead><tr>" +
+        '<div class="table-wrap"><table><thead><tr>' +
           "<th>Visitante</th>" +
-          '<th class="hide-sm">Quando</th>' +
+          "<th>Quando</th>" +
+          "<th>Dispositivo</th>" +
           '<th class="num">Duração</th>' +
           '<th class="num hide-sm">Páginas</th>' +
           "<th>Resultado</th>" +
-        "</tr></thead><tbody>" + linhas + "</tbody></table>";
+        "</tr></thead><tbody>" + linhas + "</tbody></table></div>";
     }
 
     // ---- carregar ----

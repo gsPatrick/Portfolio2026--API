@@ -186,6 +186,9 @@ async function sessions({ limit = 30 } = {}) {
         (MAX(ts) - MIN(ts))                AS "durationMs",
         COUNT(*)                           AS "events",
         COUNT(DISTINCT path)               AS "pages",
+        MAX(CASE WHEN type = 'session_start' THEN meta->>'device' END)   AS "device",
+        MAX(CASE WHEN type = 'session_start' THEN meta->>'referrer' END) AS "referrer",
+        MIN(CASE WHEN type = 'page_view' THEN path END)                  AS "entryPath",
         BOOL_OR(type = 'form_submit')      AS "converted"
      FROM events
      GROUP BY session_id
@@ -205,6 +208,9 @@ async function sessions({ limit = 30 } = {}) {
     durationMs: Number(r.durationMs) || 0,
     events: Number(r.events),
     pages: Number(r.pages),
+    device: r.device || "desconhecido",
+    referrer: r.referrer || null,
+    entryPath: r.entryPath || null,
     converted: Boolean(r.converted),
   }));
 }

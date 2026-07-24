@@ -124,6 +124,7 @@ async function montar({ days = 30 } = {}) {
     duracaoMs: s.durationMs,
     paginas: s.pages,
     eventos: s.events,
+    dispositivo: s.device || "desconhecido",
     converteu: s.converted,
   }));
 
