@@ -5,8 +5,8 @@ const { sequelize } = require("../src/models");
 
 async function main() {
   await sequelize.authenticate();
-  await sequelize.query('TRUNCATE TABLE "events", "visitors" RESTART IDENTITY CASCADE;');
-  console.log("Banco de rastreamento zerado: 0 eventos, 0 visitantes.");
+  await sequelize.query('TRUNCATE TABLE "events", "visitors", "leads" RESTART IDENTITY CASCADE;');
+  console.log("Banco zerado: 0 eventos, 0 visitantes, 0 mensagens.");
   await sequelize.close();
 }
 

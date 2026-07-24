@@ -20,6 +20,23 @@ npm run seed:demo        # (opcional) dados de demonstração
 npm run db:limpar        # zera tudo antes de ir ao ar
 ```
 
+## Deploy (Docker / EasyPanel)
+
+A imagem já aplica as migrations e sobe a API sozinha (`CMD`). No EasyPanel:
+
+1. Aponte o app para este repositório (build por **Dockerfile**).
+2. Configure as variáveis de ambiente (veja `.env.example`): `DATABASE_URL` **ou**
+   `DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD`, `CORS_ORIGIN` e, se o Postgres
+   for gerenciado, `DB_SSL=true`.
+3. A porta interna é **4000** (`EXPOSE 4000`).
+
+Local, se quiser testar a imagem:
+
+```bash
+docker build -t portfolio-api .
+docker run --env-file .env -p 4000:4000 portfolio-api
+```
+
 ## Documentação
 
 Tudo detalhado em [`src/documentacao/`](./src/documentacao):
